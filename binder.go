@@ -15,13 +15,13 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Bindr struct {
+type Binder struct {
 	log zerolog.Logger
 }
 
 // Bind binds the config tags from the structs and binds flags to the cobra command.
 func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
-	p := &Bindr{}
+	p := &Binder{}
 
 	if len(options) == 1 {
 		opts := options[0]
@@ -34,7 +34,7 @@ func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
 	return p.processFields("", reflect.TypeOf(obj), cmd)
 }
 
-func (p *Bindr) processFields(prefix string, t reflect.Type, cmd *cobra.Command) error {
+func (p *Binder) processFields(prefix string, t reflect.Type, cmd *cobra.Command) error {
 	for i := 0; i < t.NumField(); i++ {
 		err := p.processField(prefix, t.Field(i), cmd)
 		if err != nil {
@@ -45,7 +45,7 @@ func (p *Bindr) processFields(prefix string, t reflect.Type, cmd *cobra.Command)
 	return nil
 }
 
-func (p *Bindr) processField(prefix string, field reflect.StructField, cmd *cobra.Command) error {
+func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cobra.Command) error {
 	n := strings.ToLower(field.Name)
 	if prefix != "" {
 		n = fmt.Sprintf("%s.%s", prefix, strings.ToLower(field.Name))
@@ -234,7 +234,7 @@ type JSONStruct struct {
 	BoolArray    []bool    `json:"boolarray,omitempty"`
 }
 
-func (p *Bindr) processSlice(n, def, desc string, field reflect.StructField, cmd *cobra.Command) (err error) {
+func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cmd *cobra.Command) (err error) {
 	s := &JSONStruct{}
 	switch field.Type.Elem().Kind() {
 	case reflect.Int:
