@@ -1,0 +1,17 @@
+sudo: false
+language: go
+env:
+  - GO111MODULE=on
+go:
+  - 1.16.x
+git:
+  depth: 1
+notifications:
+  email: false
+  slack:
+    secure: qg1KUWFZTGXvPgPiR85XMOi85Uw5q0luEUel0zFWk4UxpFX64khpvvnhFhQCyugZxFyCKwxWXW2oc6gD40X+jCvGYUhBBIl91jabwwR9hZ9ZkmPbkm0/ABVpsOUO9bBnrP4iVWQeyVHw7HdxFenCEA2wtlelSVkj8ItYjo5VnMWiUbl1idUca8KmVVHaKPjU/Fp9xDduisJozFOrbuCnpQUmubko5S3cIN5TsWwBpMMAa2eKSmWrXP9hpP3+znOjbrrJCpEuZbwRUu3JcReogLVbzmvwTNzLYnzoh97/stxzZVxxvM7EI3SBjuVYqFrdHW/3xk+nFBPYfrGsvFoS/yftbeRHj18yYf0GQBqF0/yBTDMet6fBlL92KoG9f2WQF/pqkWo6CdE+yLCKTLPiwQwzlurN6eONsEVrTerlILtxGbcyoRtEvLAvNPj5k0t2iQ322DkqD2vSDkImaItBsFKMXrh1FblTDreeFMOfDZbV2rg1OLInkxcl2PQQZPvSHDK5eQHPReEgU3AHJU/8oKey80x74UcVFL9Ge9DGiCi4Yg9vKWma3crJZtrw0Pkx1NqNMS1RlGNGTkMQH7L7pApcSdBdKWTe4C/sOyC/D4RoSpMHzC2ErLWKNWTTzt4TUoytKDKW331b5cCWKEg3RtAzoWENB2XcgmgVSQQtIY4=
+before_script:
+  - go install github.com/golangci/golangci-lint/cmd/golangci-lint
+script:
+  - golangci-lint run
+  - go test -v -race ./...
