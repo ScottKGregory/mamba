@@ -4,32 +4,24 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"reflect"
 	"strconv"
 	"strings"
 
-	"github.com/rs/zerolog"
-	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
-type Binder struct {
-	log zerolog.Logger
-}
+type Binder struct{}
 
 // Bind binds the config tags from the structs and binds flags to the cobra command.
 func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
 	p := &Binder{}
-
 	if len(options) == 1 {
-		opts := options[0]
-		p.log = log.Level(opts.LogLevel)
+		// opts := options[0]
 	} else {
-		p.log = log.Level(zerolog.ErrorLevel)
+		// Set defaults
 	}
-	p.log = p.log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
 
 	return p.processFields("", reflect.TypeOf(obj), cmd)
 }
@@ -51,10 +43,7 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		n = fmt.Sprintf("%s.%s", prefix, strings.ToLower(field.Name))
 	}
 
-	l := p.log.With().Str("name", n).Logger()
-
 	if string(field.Name[0]) != strings.ToUpper(string(field.Name[0])) {
-		l.Debug().Msg("Skipping unexported field")
 		return nil
 	}
 
@@ -62,7 +51,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 	tag := field.Tag.Get("config")
 
 	if tag == "" {
-		l.Trace().Msg("Skipping untagged field")
 		return nil
 	}
 
@@ -74,7 +62,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		desc = ""
 	} else {
 		if len(strings.Split(tag, ",")) < 2 {
-			l.Error().Msg("Config tag requires two values in the format \"default,description\"")
 			return errors.New("invalid config tag, both default and description are required")
 		}
 
@@ -83,15 +70,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		desc = tag[lastComma+1:]
 	}
 
-	l = l.With().Str("def", def).Str("desc", desc).Logger()
-
-	v := true
 	switch k {
 	case reflect.Int:
 		var i int
 		i, err := strconv.Atoi(def)
 		if err != nil {
-			l.Error().Err(err).Msg("Invalid default value")
 			return err
 		}
 
@@ -110,7 +93,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		var i float64
 		i, err := strconv.ParseFloat(def, 64)
 		if err != nil {
-			l.Error().Err(err).Msg("invalid default value")
 			return err
 		}
 
@@ -123,7 +105,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		var i float64
 		i, err := strconv.ParseFloat(def, 32)
 		if err != nil {
-			l.Error().Err(err).Msg("invalid default value")
 			return err
 		}
 
@@ -136,7 +117,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		var i int64
 		i, err := strconv.ParseInt(def, 0, 8)
 		if err != nil {
-			l.Error().Err(err).Msg("invalid default value")
 			return err
 		}
 
@@ -149,7 +129,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		var i int64
 		i, err := strconv.ParseInt(def, 0, 16)
 		if err != nil {
-			l.Error().Err(err).Msg("invalid default value")
 			return err
 		}
 
@@ -162,7 +141,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		var i int64
 		i, err := strconv.ParseInt(def, 0, 32)
 		if err != nil {
-			l.Error().Err(err).Msg("invalid default value")
 			return err
 		}
 
@@ -175,7 +153,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		var i int64
 		i, err := strconv.ParseInt(def, 0, 64)
 		if err != nil {
-			l.Error().Err(err).Msg("invalid default value")
 			return err
 		}
 
@@ -188,7 +165,6 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		var i bool
 		i, err := strconv.ParseBool(def)
 		if err != nil {
-			l.Error().Err(err).Msg("invalid default value")
 			return err
 		}
 
@@ -200,25 +176,18 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 	case reflect.Array, reflect.Slice:
 		err := p.processSlice(n, def, desc, field, cmd)
 		if err != nil && strings.HasPrefix(err.Error(), "unsupported type for slice") {
-			l.Warn().Msg("Unsupported slice type detected, no flag will be bound")
 			err = nil
-			v = false
 		} else if err != nil {
 			return err
 		}
 	case reflect.Map:
-		l.Warn().Msg("Map value detected, no flag will be bound")
-		v = false
+		return nil
 	case reflect.Struct:
 		return p.processFields(n, field.Type, cmd)
 	case reflect.Ptr:
 		return p.processFields(n, field.Type.Elem(), cmd)
 	default:
 		return errors.New("inavlid type supplied")
-	}
-
-	if v {
-		l.Debug().Msg("Field registered")
 	}
 
 	return nil
@@ -241,7 +210,6 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 		def := fmt.Sprintf("{\"intarray\":%s}", def)
 		err := json.Unmarshal([]byte(def), &s)
 		if err != nil {
-			p.log.Error().Err(err).Msg("Error unmarshalling json")
 			return err
 		}
 		cmd.Flags().IntSlice(n, s.IntArray, desc)
@@ -249,7 +217,6 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 		def := fmt.Sprintf("{\"stringarray\":%s}", def)
 		err := json.Unmarshal([]byte(def), &s)
 		if err != nil {
-			p.log.Error().Err(err).Msg("Error unmarshalling json")
 			return err
 		}
 		cmd.Flags().StringSlice(n, s.StringArray, desc)
@@ -257,7 +224,6 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 		def := fmt.Sprintf("{\"float64array\":%s}", def)
 		err := json.Unmarshal([]byte(def), &s)
 		if err != nil {
-			p.log.Error().Err(err).Msg("Error unmarshalling json")
 			return err
 		}
 		cmd.Flags().Float64Slice(n, s.Float64Array, desc)
@@ -265,7 +231,6 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 		def := fmt.Sprintf("{\"float32array\":%s}", def)
 		err := json.Unmarshal([]byte(def), &s)
 		if err != nil {
-			p.log.Error().Err(err).Msg("Error unmarshalling json")
 			return err
 		}
 		cmd.Flags().Float32Slice(n, s.Float32Array, desc)
@@ -273,7 +238,6 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 		def := fmt.Sprintf("{\"int32array\":%s}", def)
 		err := json.Unmarshal([]byte(def), &s)
 		if err != nil {
-			p.log.Error().Err(err).Msg("Error unmarshalling json")
 			return err
 		}
 		cmd.Flags().Int32Slice(n, s.Int32Array, desc)
@@ -281,7 +245,6 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 		def := fmt.Sprintf("{\"int64array\":%s}", def)
 		err := json.Unmarshal([]byte(def), &s)
 		if err != nil {
-			p.log.Error().Err(err).Msg("Error unmarshalling json")
 			return err
 		}
 		cmd.Flags().Int64Slice(n, s.Int64Array, desc)
@@ -289,7 +252,6 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 		def := fmt.Sprintf("{\"boolarray\":%s}", def)
 		err := json.Unmarshal([]byte(def), &s)
 		if err != nil {
-			p.log.Error().Err(err).Msg("Error unmarshalling json")
 			return err
 		}
 		cmd.Flags().BoolSlice(n, s.BoolArray, desc)

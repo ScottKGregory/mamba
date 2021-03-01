@@ -3,12 +3,9 @@ package mamba
 import (
 	"testing"
 
-	"github.com/rs/zerolog"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 )
-
-const logLevel zerolog.Level = zerolog.Disabled
 
 // Int.
 type BindIntSetsDefault struct {
@@ -17,7 +14,7 @@ type BindIntSetsDefault struct {
 
 func TestBindIntSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindIntSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindIntSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetInt("inttest")
@@ -32,7 +29,7 @@ type BindIntInvalidDefaultReturnsError struct {
 
 func TestBindIntInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindIntInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindIntInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -44,7 +41,7 @@ type BindStringSetsDefault struct {
 
 func TestBindStringSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindStringSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindStringSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetString("stringtest")
@@ -60,7 +57,7 @@ type BindFloat64SetsDefault struct {
 
 func TestBindFloat64SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat64SetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat64SetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetFloat64("float64test")
@@ -75,7 +72,7 @@ type BindFloat64InvalidDefaultReturnsError struct {
 
 func TestBindFloat64InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat64InvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat64InvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -87,7 +84,7 @@ type BindFloat32SetsDefault struct {
 
 func TestBindFloat32SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat32SetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat32SetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetFloat32("float32test")
@@ -102,7 +99,7 @@ type BindFloat32InvalidDefaultReturnsError struct {
 
 func TestBindFloat32InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat32InvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat32InvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -114,7 +111,7 @@ type BindInt8SetsDefault struct {
 
 func TestBindInt8SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt8SetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt8SetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetInt8("int8test")
@@ -129,7 +126,7 @@ type BindInt8InvalidDefaultReturnsError struct {
 
 func TestBindInt8InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt8InvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt8InvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -141,7 +138,7 @@ type BindInt16SetsDefault struct {
 
 func TestBindInt16SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt16SetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt16SetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetInt16("int16test")
@@ -156,7 +153,7 @@ type BindInt16InvalidDefaultReturnsError struct {
 
 func TestBindInt16InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt16InvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt16InvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -168,7 +165,7 @@ type BindInt32SetsDefault struct {
 
 func TestBindInt32SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt32SetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt32SetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetInt32("int32test")
@@ -183,7 +180,7 @@ type BindInt32InvalidDefaultReturnsError struct {
 
 func TestBindInt32InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt32InvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt32InvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -195,7 +192,7 @@ type BindInt64SetsDefault struct {
 
 func TestBindInt64SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt64SetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt64SetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetInt64("int64test")
@@ -210,7 +207,7 @@ type BindInt64InvalidDefaultReturnsError struct {
 
 func TestBindInt64InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt64InvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt64InvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -222,7 +219,7 @@ type BindBoolSetsDefault struct {
 
 func TestBindBoolSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindBoolSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindBoolSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetBool("booltest")
@@ -237,7 +234,7 @@ type BindBoolInvalidDefaultReturnsError struct {
 
 func TestBindBoolInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindBoolInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindBoolInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -249,7 +246,7 @@ type BindIntSliceSetsDefault struct {
 
 func TestBindIntSliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindIntSliceSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindIntSliceSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetIntSlice("intslicetest")
@@ -264,7 +261,7 @@ type BindIntSliceInvalidDefaultReturnsError struct {
 
 func TestBindIntSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindIntSliceInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindIntSliceInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -276,7 +273,7 @@ type BindStringSliceSetsDefault struct {
 
 func TestBindStringSliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindStringSliceSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindStringSliceSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetStringSlice("stringslicetest")
@@ -291,7 +288,7 @@ type BindStringSliceInvalidDefaultReturnsError struct {
 
 func TestBindStringSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindStringSliceInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindStringSliceInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -303,7 +300,7 @@ type BindFloat64SliceSetsDefault struct {
 
 func TestBindFloat64SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat64SliceSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat64SliceSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetFloat64Slice("float64slicetest")
@@ -318,7 +315,7 @@ type BindFloat64SliceInvalidDefaultReturnsError struct {
 
 func TestBindFloat64SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat64SliceInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat64SliceInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -330,7 +327,7 @@ type BindFloat32SliceSetsDefault struct {
 
 func TestBindFloat32SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat32SliceSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat32SliceSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetFloat32Slice("float32slicetest")
@@ -345,7 +342,7 @@ type BindFloat32SliceInvalidDefaultReturnsError struct {
 
 func TestBindFloat32SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindFloat32SliceInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindFloat32SliceInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -357,7 +354,7 @@ type BindInt32SliceSetsDefault struct {
 
 func TestBindInt32SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt32SliceSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt32SliceSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetInt32Slice("int32slicetest")
@@ -372,7 +369,7 @@ type BindInt32SliceInvalidDefaultReturnsError struct {
 
 func TestBindInt32SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt32SliceInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt32SliceInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -384,7 +381,7 @@ type BindInt64SliceSetsDefault struct {
 
 func TestBindInt64SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt64SliceSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt64SliceSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetInt64Slice("int64slicetest")
@@ -399,7 +396,7 @@ type BindInt64SliceInvalidDefaultReturnsError struct {
 
 func TestBindInt64SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindInt64SliceInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindInt64SliceInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -411,7 +408,7 @@ type BindBoolSliceSetsDefault struct {
 
 func TestBindBoolSliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindBoolSliceSetsDefault{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindBoolSliceSetsDefault{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetBoolSlice("boolslicetest")
@@ -426,7 +423,7 @@ type BindBoolSliceInvalidDefaultReturnsError struct {
 
 func TestBindBoolSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindBoolSliceInvalidDefaultReturnsError{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindBoolSliceInvalidDefaultReturnsError{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -438,7 +435,7 @@ type InvalidTagReturnsError1 struct {
 
 func TestInvalidTagReturnsError1(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(InvalidTagReturnsError1{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(InvalidTagReturnsError1{}, cmd)
 
 	assert.NotNil(t, err)
 }
@@ -455,7 +452,7 @@ type BindNestedStructInnerSetsDefaults struct {
 
 func TestBindNestedStructSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindNestedStructSetsDefaults{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindNestedStructSetsDefaults{}, cmd)
 	assert.Nil(t, err)
 
 	i, err := cmd.Flags().GetString("innerstruct.string")
@@ -478,7 +475,7 @@ type BindIgnoresUnexportedFields struct {
 
 func TestBindIgnoresUnexportedFields(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindIgnoresUnexportedFields{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindIgnoresUnexportedFields{}, cmd)
 	assert.Nil(t, err)
 
 	j, err := cmd.Flags().GetBoolSlice("boolslice")
@@ -498,7 +495,7 @@ type BindIgnoresMaps struct {
 
 func TestBindIgnoresMaps(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindIgnoresMaps{}, cmd, &Options{LogLevel: logLevel})
+	err := Bind(BindIgnoresMaps{}, cmd)
 	assert.Nil(t, err)
 
 	j, err := cmd.Flags().GetString("map")

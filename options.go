@@ -1,9 +1,5 @@
 package mamba
 
-import "github.com/rs/zerolog"
-
-// Options allows for configuring the mamba bindr.
+// Options allows for configuring the mamba binder.
 type Options struct {
-	// LogLevel sets the zerolog log level. By default it is set to none.
-	LogLevel zerolog.Level
 }

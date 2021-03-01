@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/rs/zerolog"
 	"github.com/scottkgregory/mamba"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -42,5 +41,5 @@ func Execute() {
 }
 
 func init() {
-	mamba.Bind(AppConfig{}, rootCmd, &mamba.Options{LogLevel: zerolog.TraceLevel})
+	mamba.Bind(AppConfig{}, rootCmd)
 }
