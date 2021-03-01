@@ -14,6 +14,12 @@ import (
 
 type Binder struct{}
 
+func MustBind(obj interface{}, cmd *cobra.Command, options ...*Options) {
+	if err := Bind(obj, cmd, options...); err != nil {
+		panic(err)
+	}
+}
+
 // Bind binds the config tags from the structs and binds flags to the cobra command.
 func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
 	p := &Binder{}
@@ -70,14 +76,16 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		desc = tag[lastComma+1:]
 	}
 
+	var err error
 	switch k {
 	case reflect.Int:
 		var i int
-		i, err := strconv.Atoi(def)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.Atoi(def)
+			if err != nil {
+				return err
+			}
 		}
-
 		cmd.Flags().Int(n, i, desc)
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
@@ -85,15 +93,17 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.String:
 		cmd.Flags().String(n, def, desc)
-		err := viper.BindPFlag(n, cmd.Flags().Lookup(n))
+		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
 		}
 	case reflect.Float64:
 		var i float64
-		i, err := strconv.ParseFloat(def, 64)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.ParseFloat(def, 64)
+			if err != nil {
+				return err
+			}
 		}
 
 		cmd.Flags().Float64(n, i, desc)
@@ -103,9 +113,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.Float32:
 		var i float64
-		i, err := strconv.ParseFloat(def, 32)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.ParseFloat(def, 32)
+			if err != nil {
+				return err
+			}
 		}
 
 		cmd.Flags().Float32(n, float32(i), desc)
@@ -115,9 +127,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.Int8:
 		var i int64
-		i, err := strconv.ParseInt(def, 0, 8)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.ParseInt(def, 0, 8)
+			if err != nil {
+				return err
+			}
 		}
 
 		cmd.Flags().Int8(n, int8(i), desc)
@@ -127,9 +141,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.Int16:
 		var i int64
-		i, err := strconv.ParseInt(def, 0, 16)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.ParseInt(def, 0, 16)
+			if err != nil {
+				return err
+			}
 		}
 
 		cmd.Flags().Int16(n, int16(i), desc)
@@ -139,9 +155,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.Int32:
 		var i int64
-		i, err := strconv.ParseInt(def, 0, 32)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.ParseInt(def, 0, 32)
+			if err != nil {
+				return err
+			}
 		}
 
 		cmd.Flags().Int32(n, int32(i), desc)
@@ -151,9 +169,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.Int64:
 		var i int64
-		i, err := strconv.ParseInt(def, 0, 64)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.ParseInt(def, 0, 64)
+			if err != nil {
+				return err
+			}
 		}
 
 		cmd.Flags().Int64(n, int64(i), desc)
@@ -163,9 +183,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.Bool:
 		var i bool
-		i, err := strconv.ParseBool(def)
-		if err != nil {
-			return err
+		if def != "" {
+			i, err = strconv.ParseBool(def)
+			if err != nil {
+				return err
+			}
 		}
 
 		cmd.Flags().Bool(n, i, desc)
@@ -207,52 +229,66 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 	s := &JSONStruct{}
 	switch field.Type.Elem().Kind() {
 	case reflect.Int:
-		def := fmt.Sprintf("{\"intarray\":%s}", def)
-		err := json.Unmarshal([]byte(def), &s)
-		if err != nil {
-			return err
+		if def != "" {
+			def := fmt.Sprintf("{\"intarray\":%s}", def)
+			err := json.Unmarshal([]byte(def), &s)
+			if err != nil {
+				return err
+			}
 		}
 		cmd.Flags().IntSlice(n, s.IntArray, desc)
 	case reflect.String:
-		def := fmt.Sprintf("{\"stringarray\":%s}", def)
-		err := json.Unmarshal([]byte(def), &s)
-		if err != nil {
-			return err
+		if def != "" {
+			def := fmt.Sprintf("{\"stringarray\":%s}", def)
+			err := json.Unmarshal([]byte(def), &s)
+			if err != nil {
+				return err
+			}
 		}
 		cmd.Flags().StringSlice(n, s.StringArray, desc)
 	case reflect.Float64:
-		def := fmt.Sprintf("{\"float64array\":%s}", def)
-		err := json.Unmarshal([]byte(def), &s)
-		if err != nil {
-			return err
+		if def != "" {
+			def := fmt.Sprintf("{\"float64array\":%s}", def)
+			err := json.Unmarshal([]byte(def), &s)
+			if err != nil {
+				return err
+			}
 		}
 		cmd.Flags().Float64Slice(n, s.Float64Array, desc)
 	case reflect.Float32:
-		def := fmt.Sprintf("{\"float32array\":%s}", def)
-		err := json.Unmarshal([]byte(def), &s)
-		if err != nil {
-			return err
+		if def != "" {
+			def := fmt.Sprintf("{\"float32array\":%s}", def)
+			err := json.Unmarshal([]byte(def), &s)
+			if err != nil {
+				return err
+			}
 		}
 		cmd.Flags().Float32Slice(n, s.Float32Array, desc)
 	case reflect.Int32:
-		def := fmt.Sprintf("{\"int32array\":%s}", def)
-		err := json.Unmarshal([]byte(def), &s)
-		if err != nil {
-			return err
+		if def != "" {
+			def := fmt.Sprintf("{\"int32array\":%s}", def)
+			err := json.Unmarshal([]byte(def), &s)
+			if err != nil {
+				return err
+			}
 		}
 		cmd.Flags().Int32Slice(n, s.Int32Array, desc)
 	case reflect.Int64:
-		def := fmt.Sprintf("{\"int64array\":%s}", def)
-		err := json.Unmarshal([]byte(def), &s)
-		if err != nil {
-			return err
+		if def != "" {
+			def := fmt.Sprintf("{\"int64array\":%s}", def)
+			err := json.Unmarshal([]byte(def), &s)
+			if err != nil {
+				return err
+			}
 		}
 		cmd.Flags().Int64Slice(n, s.Int64Array, desc)
 	case reflect.Bool:
-		def := fmt.Sprintf("{\"boolarray\":%s}", def)
-		err := json.Unmarshal([]byte(def), &s)
-		if err != nil {
-			return err
+		if def != "" {
+			def := fmt.Sprintf("{\"boolarray\":%s}", def)
+			err := json.Unmarshal([]byte(def), &s)
+			if err != nil {
+				return err
+			}
 		}
 		cmd.Flags().BoolSlice(n, s.BoolArray, desc)
 	default:
