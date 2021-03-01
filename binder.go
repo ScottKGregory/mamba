@@ -12,7 +12,9 @@ import (
 	"github.com/spf13/viper"
 )
 
-type Binder struct{}
+type Binder struct {
+	opts *Options
+}
 
 func MustBind(obj interface{}, cmd *cobra.Command, options ...*Options) {
 	if err := Bind(obj, cmd, options...); err != nil {
@@ -22,19 +24,19 @@ func MustBind(obj interface{}, cmd *cobra.Command, options ...*Options) {
 
 // Bind binds the config tags from the structs and binds flags to the cobra command.
 func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
-	p := &Binder{}
+	b := &Binder{}
 	if len(options) == 1 {
-		// opts := options[0]
+		b.opts = options[0]
 	} else {
 		// Set defaults
 	}
 
-	return p.processFields("", reflect.TypeOf(obj), cmd)
+	return b.processFields("", reflect.TypeOf(obj), cmd)
 }
 
-func (p *Binder) processFields(prefix string, t reflect.Type, cmd *cobra.Command) error {
+func (b *Binder) processFields(prefix string, t reflect.Type, cmd *cobra.Command) error {
 	for i := 0; i < t.NumField(); i++ {
-		err := p.processField(prefix, t.Field(i), cmd)
+		err := b.processField(prefix, t.Field(i), cmd)
 		if err != nil {
 			return err
 		}
@@ -43,7 +45,7 @@ func (p *Binder) processFields(prefix string, t reflect.Type, cmd *cobra.Command
 	return nil
 }
 
-func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cobra.Command) error {
+func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cobra.Command) error {
 	n := strings.ToLower(field.Name)
 	if prefix != "" {
 		n = fmt.Sprintf("%s.%s", prefix, strings.ToLower(field.Name))
@@ -86,13 +88,21 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 				return err
 			}
 		}
-		cmd.Flags().Int(n, i, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Int(n, i, desc)
+		} else {
+			cmd.Flags().Int(n, i, desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
 		}
 	case reflect.String:
-		cmd.Flags().String(n, def, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().String(n, def, desc)
+		} else {
+			cmd.Flags().String(n, def, desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
@@ -106,7 +116,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		cmd.Flags().Float64(n, i, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Float64(n, i, desc)
+		} else {
+			cmd.Flags().Float64(n, i, desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
@@ -120,7 +134,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		cmd.Flags().Float32(n, float32(i), desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Float32(n, float32(i), desc)
+		} else {
+			cmd.Flags().Float32(n, float32(i), desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
@@ -134,7 +152,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		cmd.Flags().Int8(n, int8(i), desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Int8(n, int8(i), desc)
+		} else {
+			cmd.Flags().Int8(n, int8(i), desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
@@ -148,7 +170,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		cmd.Flags().Int16(n, int16(i), desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Int16(n, int16(i), desc)
+		} else {
+			cmd.Flags().Int16(n, int16(i), desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
@@ -162,7 +188,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		cmd.Flags().Int32(n, int32(i), desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Int32(n, int32(i), desc)
+		} else {
+			cmd.Flags().Int32(n, int32(i), desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
@@ -176,7 +206,11 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		cmd.Flags().Int64(n, int64(i), desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Int64(n, int64(i), desc)
+		} else {
+			cmd.Flags().Int64(n, int64(i), desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
@@ -190,13 +224,17 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		cmd.Flags().Bool(n, i, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Bool(n, i, desc)
+		} else {
+			cmd.Flags().Bool(n, i, desc)
+		}
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 		if err != nil {
 			return err
 		}
 	case reflect.Array, reflect.Slice:
-		err := p.processSlice(n, def, desc, field, cmd)
+		err := b.processSlice(n, def, desc, field, cmd)
 		if err != nil && strings.HasPrefix(err.Error(), "unsupported type for slice") {
 			err = nil
 		} else if err != nil {
@@ -205,9 +243,9 @@ func (p *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 	case reflect.Map:
 		return nil
 	case reflect.Struct:
-		return p.processFields(n, field.Type, cmd)
+		return b.processFields(n, field.Type, cmd)
 	case reflect.Ptr:
-		return p.processFields(n, field.Type.Elem(), cmd)
+		return b.processFields(n, field.Type.Elem(), cmd)
 	default:
 		return errors.New("inavlid type supplied")
 	}
@@ -225,7 +263,7 @@ type JSONStruct struct {
 	BoolArray    []bool    `json:"boolarray,omitempty"`
 }
 
-func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cmd *cobra.Command) (err error) {
+func (b *Binder) processSlice(n, def, desc string, field reflect.StructField, cmd *cobra.Command) (err error) {
 	s := &JSONStruct{}
 	switch field.Type.Elem().Kind() {
 	case reflect.Int:
@@ -236,7 +274,11 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 				return err
 			}
 		}
-		cmd.Flags().IntSlice(n, s.IntArray, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().IntSlice(n, s.IntArray, desc)
+		} else {
+			cmd.Flags().IntSlice(n, s.IntArray, desc)
+		}
 	case reflect.String:
 		if def != "" {
 			def := fmt.Sprintf("{\"stringarray\":%s}", def)
@@ -245,7 +287,11 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 				return err
 			}
 		}
-		cmd.Flags().StringSlice(n, s.StringArray, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().StringSlice(n, s.StringArray, desc)
+		} else {
+			cmd.Flags().StringSlice(n, s.StringArray, desc)
+		}
 	case reflect.Float64:
 		if def != "" {
 			def := fmt.Sprintf("{\"float64array\":%s}", def)
@@ -254,7 +300,11 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 				return err
 			}
 		}
-		cmd.Flags().Float64Slice(n, s.Float64Array, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Float64Slice(n, s.Float64Array, desc)
+		} else {
+			cmd.Flags().Float64Slice(n, s.Float64Array, desc)
+		}
 	case reflect.Float32:
 		if def != "" {
 			def := fmt.Sprintf("{\"float32array\":%s}", def)
@@ -263,7 +313,11 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 				return err
 			}
 		}
-		cmd.Flags().Float32Slice(n, s.Float32Array, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Float32Slice(n, s.Float32Array, desc)
+		} else {
+			cmd.Flags().Float32Slice(n, s.Float32Array, desc)
+		}
 	case reflect.Int32:
 		if def != "" {
 			def := fmt.Sprintf("{\"int32array\":%s}", def)
@@ -272,7 +326,11 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 				return err
 			}
 		}
-		cmd.Flags().Int32Slice(n, s.Int32Array, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Int32Slice(n, s.Int32Array, desc)
+		} else {
+			cmd.Flags().Int32Slice(n, s.Int32Array, desc)
+		}
 	case reflect.Int64:
 		if def != "" {
 			def := fmt.Sprintf("{\"int64array\":%s}", def)
@@ -281,7 +339,11 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 				return err
 			}
 		}
-		cmd.Flags().Int64Slice(n, s.Int64Array, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().Int64Slice(n, s.Int64Array, desc)
+		} else {
+			cmd.Flags().Int64Slice(n, s.Int64Array, desc)
+		}
 	case reflect.Bool:
 		if def != "" {
 			def := fmt.Sprintf("{\"boolarray\":%s}", def)
@@ -290,7 +352,11 @@ func (p *Binder) processSlice(n, def, desc string, field reflect.StructField, cm
 				return err
 			}
 		}
-		cmd.Flags().BoolSlice(n, s.BoolArray, desc)
+		if b.opts.Persistent {
+			cmd.PersistentFlags().BoolSlice(n, s.BoolArray, desc)
+		} else {
+			cmd.Flags().BoolSlice(n, s.BoolArray, desc)
+		}
 	default:
 		return fmt.Errorf("unsupported type for slice: %s", n)
 	}
