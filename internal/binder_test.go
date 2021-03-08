@@ -1,4 +1,4 @@
-package mamba
+package internal
 
 import (
 	"testing"
@@ -241,7 +241,7 @@ func TestBindBoolInvalidDefaultReturnsError(t *testing.T) {
 
 // IntSlice.
 type BindIntSliceSetsDefault struct {
-	IntSliceTest []int `config:"[12,13,14,15],The IntSlice to test"`
+	IntSliceTest []int `config:"\"[12,13,14,15]\",The IntSlice to test"`
 }
 
 func TestBindIntSliceSetsDefault(t *testing.T) {
@@ -268,7 +268,7 @@ func TestBindIntSliceInvalidDefaultReturnsError(t *testing.T) {
 
 // StringSlice.
 type BindStringSliceSetsDefault struct {
-	StringSliceTest []string `config:"[\"Value1\",\"Value2\"],The StringSlice to test"`
+	StringSliceTest []string `config:"\"[\"\"Value1\"\",\"\"Value2\"\"]\",The StringSlice to test"`
 }
 
 func TestBindStringSliceSetsDefault(t *testing.T) {
@@ -295,7 +295,7 @@ func TestBindStringSliceInvalidDefaultReturnsError(t *testing.T) {
 
 // Float64Slice.
 type BindFloat64SliceSetsDefault struct {
-	Float64SliceTest []float64 `config:"[12,13,14,15],The Float64Slice to test"`
+	Float64SliceTest []float64 `config:"\"[12,13,14,15]\",The Float64Slice to test"`
 }
 
 func TestBindFloat64SliceSetsDefault(t *testing.T) {
@@ -322,7 +322,7 @@ func TestBindFloat64SliceInvalidDefaultReturnsError(t *testing.T) {
 
 // Float32Slice.
 type BindFloat32SliceSetsDefault struct {
-	Float32SliceTest []float32 `config:"[12,13,14,15],The Float32Slice to test"`
+	Float32SliceTest []float32 `config:"\"[12,13,14,15]\",The Float32Slice to test"`
 }
 
 func TestBindFloat32SliceSetsDefault(t *testing.T) {
@@ -349,7 +349,7 @@ func TestBindFloat32SliceInvalidDefaultReturnsError(t *testing.T) {
 
 // Int32Slice.
 type BindInt32SliceSetsDefault struct {
-	Int32SliceTest []int32 `config:"[12,13,14,15],The Int32Slice to test"`
+	Int32SliceTest []int32 `config:"\"[12,13,14,15]\",The Int32Slice to test"`
 }
 
 func TestBindInt32SliceSetsDefault(t *testing.T) {
@@ -376,7 +376,7 @@ func TestBindInt32SliceInvalidDefaultReturnsError(t *testing.T) {
 
 // Int64Slice.
 type BindInt64SliceSetsDefault struct {
-	Int64SliceTest []int64 `config:"[12,13,14,15],The Int64Slice to test"`
+	Int64SliceTest []int64 `config:"\"[12,13,14,15]\",The Int64Slice to test"`
 }
 
 func TestBindInt64SliceSetsDefault(t *testing.T) {
@@ -403,7 +403,7 @@ func TestBindInt64SliceInvalidDefaultReturnsError(t *testing.T) {
 
 // BoolSlice.
 type BindBoolSliceSetsDefault struct {
-	BoolSliceTest []bool `config:"[true,true,false,true],The BoolSlice to test"`
+	BoolSliceTest []bool `config:"\"[true,true,false,true]\",The BoolSlice to test"`
 }
 
 func TestBindBoolSliceSetsDefault(t *testing.T) {
@@ -428,22 +428,10 @@ func TestBindBoolSliceInvalidDefaultReturnsError(t *testing.T) {
 	assert.NotNil(t, err)
 }
 
-// Tag parsing.
-type InvalidTagReturnsError1 struct {
-	TagTest string `config:"default"`
-}
-
-func TestInvalidTagReturnsError1(t *testing.T) {
-	cmd := &cobra.Command{}
-	err := Bind(InvalidTagReturnsError1{}, cmd)
-
-	assert.NotNil(t, err)
-}
-
 // NestedStruct.
 type BindNestedStructSetsDefaults struct {
-	BoolSlice   []bool                            `config:"[true,true,false,true],The NestedStruct to test"`
-	InnerStruct BindNestedStructInnerSetsDefaults `config:","`
+	BoolSlice   []bool                            `config:"\"[true,true,false,true]\",The NestedStruct to test"`
+	InnerStruct BindNestedStructInnerSetsDefaults `config:""`
 }
 
 type BindNestedStructInnerSetsDefaults struct {
@@ -468,7 +456,7 @@ func TestBindNestedStructSetsDefault(t *testing.T) {
 
 //nolint:structcheck
 type BindIgnoresUnexportedFields struct {
-	BoolSlice []bool `config:"[true,true,false,true],A slice full of bools"`
+	BoolSlice []bool `config:"\"[true,true,false,true]\",A slice full of bools"`
 	//nolint:unused
 	unexported string `config:",Unexported"`
 }

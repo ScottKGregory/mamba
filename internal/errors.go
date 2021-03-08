@@ -1,4 +1,4 @@
-package mamba
+package internal
 
 import (
 	"fmt"
