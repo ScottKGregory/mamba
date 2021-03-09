@@ -9,9 +9,9 @@ import (
 )
 
 type AppConfig struct {
-	Messages  Messages `config:","`
-	Snakes    []string `config:"[\"adder\"],A list of snakes. Hsssss!"`
-	*Embedded `config:","`
+	Messages  Messages `config:""`
+	Snakes    []string `config:"\"[\"\"Mamba\"\",\"\"Viper\"\"]\",A list of snakes. Hsssss!,true,s"`
+	*Embedded `config:""`
 }
 
 type Messages struct {
@@ -29,6 +29,7 @@ var rootCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(viper.GetString("messages.greeting"))
 		fmt.Println("These are all the snakes that exist in the world:")
+
 		for _, s := range viper.GetStringSlice("snakes") {
 			fmt.Printf("  - %s\n", s)
 		}
@@ -41,5 +42,5 @@ func Execute() {
 }
 
 func init() {
-	mamba.Bind(AppConfig{}, rootCmd)
+	mamba.MustBind(AppConfig{}, rootCmd)
 }

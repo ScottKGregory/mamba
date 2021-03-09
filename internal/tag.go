@@ -29,15 +29,15 @@ func Parse(str string) (*Tag, error) {
 		}
 
 		if len(record) >= 1 {
-			t.Default = record[0]
+			t.Default = strings.Trim(record[0], " ")
 		}
 
 		if len(record) >= 2 {
-			t.Description = record[1]
+			t.Description = strings.Trim(record[1], " ")
 		}
 
 		if len(record) >= 3 {
-			b, err := strconv.ParseBool(record[2])
+			b, err := strconv.ParseBool(strings.Trim(record[2], " "))
 			if err != nil {
 				return nil, err
 			}
@@ -46,7 +46,7 @@ func Parse(str string) (*Tag, error) {
 		}
 
 		if len(record) >= 4 {
-			t.Shorthand = record[3]
+			t.Shorthand = strings.Trim(record[3], " ")
 		}
 
 	}

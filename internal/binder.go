@@ -268,7 +268,11 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		return errors.New("inavlid type supplied")
 	}
 
-	err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
+	if t.Persistent || b.opts.Persistent {
+		err = viper.BindPFlag(n, cmd.PersistentFlags().Lookup(n))
+	} else {
+		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
+	}
 	if err != nil {
 		return err
 	}
@@ -440,7 +444,11 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 		return fmt.Errorf("unsupported type for slice: %s", n)
 	}
 
-	err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
+	if t.Persistent || b.opts.Persistent {
+		err = viper.BindPFlag(n, cmd.PersistentFlags().Lookup(n))
+	} else {
+		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
+	}
 	if err != nil {
 		return fmt.Errorf("error binding flag: %w", err)
 	}
