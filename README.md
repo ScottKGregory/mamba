@@ -18,7 +18,7 @@ Mamba is a utility designed to make working with the combination of [cobra](http
 go get github.com/scottkgregory/mamba
 ```
 
-2. Annotation your config struct using the config tag in the form `config:"default,Description"`. Arrays, slices, and maps allow for setting default values via json.
+1. Annotation your config struct using the config tag in the form `config:"default, description, persistent, shorthand"`. Arrays, slices, and maps allow for setting default values via json. Any of these values can be omitted.
 ```go
 type Config struct {
 	Root   string   `config:"defaultRoot,The root directory to do a thing with"`
@@ -44,5 +44,5 @@ type Config struct {
 
 Options can be supplied to `mamba.Bind` to modify the way in which Mamba operates.
 ```go
-mamba.Bind(AppConfig{}, rootCmd, &mamba.Options{ LogLevel: zerolog.TraceLevel })
+mamba.Bind(AppConfig{}, rootCmd, &mamba.Options{ Persistent: true })
 ```

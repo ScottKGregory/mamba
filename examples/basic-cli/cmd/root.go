@@ -3,23 +3,25 @@ package cmd
 import (
 	"fmt"
 
+	homedir "github.com/mitchellh/go-homedir"
 	"github.com/scottkgregory/mamba"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
 
 type AppConfig struct {
-	Messages  Messages `config:""`
-	Snakes    []string `config:"\"[\"\"Mamba\"\",\"\"Viper\"\"]\",A list of snakes. Hsssss!,true,s"`
-	*Embedded `config:""`
+	ConfigFile string   `config:"./examples/basic-cli/config.yaml,The yaml config file to read, true, c"`
+	Messages   Messages `config:""`
+	Snakes     []string `config:"\"[\"\"Mamba\"\",\"\"Viper\"\"]\", A list of snakes. Hsssss!, true, s"`
+	*Embedded  `config:""`
 }
 
 type Messages struct {
-	Greeting string `config:"Hello there!,The greating to use"`
+	Greeting string `config:"Hello there!, The greating to use, false, g"`
 }
 
 type Embedded struct {
-	Farewell string `config:"Goodbye!,The farewell to use"`
+	Farewell string `config:"Goodbye!, The farewell to use"`
 }
 
 var rootCmd = &cobra.Command{
@@ -42,5 +44,33 @@ func Execute() {
 }
 
 func init() {
+	cobra.OnInitialize(initConfig)
 	mamba.MustBind(AppConfig{}, rootCmd)
+}
+
+func initConfig() {
+	cfgFile := viper.GetString("configfile")
+
+	if cfgFile != "" {
+		// Use config file from the flag.
+		viper.SetConfigFile(cfgFile)
+	} else {
+		// Find home directory.
+		home, err := homedir.Dir()
+		cobra.CheckErr(err)
+
+		// Search config in home directory with name ".cobra" (without extension).
+		viper.AddConfigPath(home)
+		viper.SetConfigName(".cobra")
+	}
+
+	viper.AutomaticEnv()
+
+	if err := viper.ReadInConfig(); err != nil {
+		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+			// Config file not found; ignore error if desired
+		} else {
+			panic(fmt.Errorf("Fatal error config file: %s \n", err))
+		}
+	}
 }
