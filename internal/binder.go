@@ -18,14 +18,26 @@ type Binder struct {
 
 // Bind binds the config tags from the structs and binds flags to the cobra command.
 func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
-	b := &Binder{}
+	b := &Binder{
+		opts: &Options{
+			Separator:      ".",
+			Persistent:     false,
+			PrefixEmbedded: true,
+		},
+	}
 	if len(options) == 1 {
 		b.opts = options[0]
-	} else {
-		b.opts = &Options{}
+		if b.opts.Separator == "" {
+			b.opts.Separator = "."
+		}
 	}
 
-	return b.processFields("", reflect.TypeOf(obj), cmd)
+	t := reflect.TypeOf(obj)
+	if reflect.TypeOf(obj).Kind() == reflect.Ptr {
+		t = reflect.TypeOf(obj).Elem()
+	}
+
+	return b.processFields("", t, cmd)
 }
 
 func (b *Binder) processFields(prefix string, t reflect.Type, cmd *cobra.Command) error {
@@ -42,7 +54,7 @@ func (b *Binder) processFields(prefix string, t reflect.Type, cmd *cobra.Command
 func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cobra.Command) error {
 	n := strings.ToLower(field.Name)
 	if prefix != "" {
-		n = fmt.Sprintf("%s.%s", prefix, strings.ToLower(field.Name))
+		n = fmt.Sprintf("%s%s%s", prefix, b.opts.Separator, strings.ToLower(field.Name))
 	}
 
 	if string(field.Name[0]) != strings.ToUpper(string(field.Name[0])) {
@@ -58,7 +70,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 
 	t, err := Parse(tag)
 	if err != nil {
-		return err
+		return NewTagParseError(tag, k, n, err)
 	}
 
 	switch k {
@@ -67,7 +79,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.Atoi(t.Default)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -102,7 +114,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.ParseFloat(t.Default, 64)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 
@@ -124,7 +136,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.ParseFloat(t.Default, 32)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 
@@ -146,7 +158,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.ParseInt(t.Default, 0, 8)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 
@@ -168,7 +180,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.ParseInt(t.Default, 0, 16)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 
@@ -190,7 +202,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.ParseInt(t.Default, 0, 32)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 
@@ -212,7 +224,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.ParseInt(t.Default, 0, 64)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 
@@ -234,7 +246,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		if t.Default != "" {
 			i, err = strconv.ParseBool(t.Default)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 
@@ -253,19 +265,20 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		}
 	case reflect.Array, reflect.Slice:
 		err := b.processSlice(n, t, field, cmd)
-		if err != nil && strings.HasPrefix(err.Error(), "unsupported type for slice") {
-			err = nil
+		if err != nil && errors.Is(err, InvalidTypeError) {
+			return nil
 		} else if err != nil {
-			return err
+			return NewParseError(t.Default, k, n, err)
 		}
-	case reflect.Map:
-		return nil
 	case reflect.Struct:
 		return b.processFields(n, field.Type, cmd)
 	case reflect.Ptr:
+		if field.Type.Elem().Kind() == reflect.Struct && !b.opts.PrefixEmbedded {
+			n = prefix
+		}
 		return b.processFields(n, field.Type.Elem(), cmd)
 	default:
-		return errors.New("inavlid type supplied")
+		return NewInvalidTypeError(field.Type.Kind(), n)
 	}
 
 	if t.Persistent || b.opts.Persistent {
@@ -274,13 +287,13 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 	}
 	if err != nil {
-		return err
+		return NewBindError(field.Type.Kind(), n, err)
 	}
 
 	return nil
 }
 
-type JSONStruct struct {
+type jsonStruct struct {
 	StringArray  []string  `json:"stringarray,omitempty"`
 	IntArray     []int     `json:"intarray,omitempty"`
 	Float64Array []float64 `json:"float64array,omitempty"`
@@ -291,14 +304,15 @@ type JSONStruct struct {
 }
 
 func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *cobra.Command) (err error) {
-	s := &JSONStruct{}
+	s := &jsonStruct{}
+	k := field.Type.Kind()
 	switch field.Type.Elem().Kind() {
 	case reflect.Int:
 		if t.Default != "" {
 			def := fmt.Sprintf("{\"intarray\":%s}", t.Default)
 			err := json.Unmarshal([]byte(def), &s)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -319,7 +333,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 			def := fmt.Sprintf("{\"stringarray\":%s}", t.Default)
 			err := json.Unmarshal([]byte(def), &s)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -340,7 +354,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 			def := fmt.Sprintf("{\"float64array\":%s}", t.Default)
 			err := json.Unmarshal([]byte(def), &s)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -361,7 +375,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 			def := fmt.Sprintf("{\"float32array\":%s}", t.Default)
 			err := json.Unmarshal([]byte(def), &s)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -382,7 +396,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 			def := fmt.Sprintf("{\"int32array\":%s}", t.Default)
 			err := json.Unmarshal([]byte(def), &s)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -403,7 +417,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 			def := fmt.Sprintf("{\"int64array\":%s}", t.Default)
 			err := json.Unmarshal([]byte(def), &s)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -424,7 +438,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 			def := fmt.Sprintf("{\"boolarray\":%s}", t.Default)
 			err := json.Unmarshal([]byte(def), &s)
 			if err != nil {
-				return err
+				return NewParseError(t.Default, k, n, err)
 			}
 		}
 		if t.Persistent || b.opts.Persistent {
@@ -441,7 +455,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 			}
 		}
 	default:
-		return fmt.Errorf("unsupported type for slice: %s", n)
+		return NewInvalidTypeError(k, n)
 	}
 
 	if t.Persistent || b.opts.Persistent {
@@ -450,7 +464,7 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
 	}
 	if err != nil {
-		return fmt.Errorf("error binding flag: %w", err)
+		return NewBindError(k, n, err)
 	}
 
 	return err

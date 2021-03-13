@@ -31,7 +31,7 @@ func TestBindIntInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindIntInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // String.
@@ -74,7 +74,7 @@ func TestBindFloat64InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat64InvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Float32.
@@ -101,7 +101,7 @@ func TestBindFloat32InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat32InvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Int8.
@@ -128,7 +128,7 @@ func TestBindInt8InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt8InvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Int16.
@@ -155,7 +155,7 @@ func TestBindInt16InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt16InvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Int32.
@@ -182,7 +182,7 @@ func TestBindInt32InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt32InvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Int64.
@@ -209,7 +209,7 @@ func TestBindInt64InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt64InvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Bool.
@@ -236,7 +236,7 @@ func TestBindBoolInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindBoolInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // IntSlice.
@@ -263,7 +263,7 @@ func TestBindIntSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindIntSliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // StringSlice.
@@ -290,7 +290,7 @@ func TestBindStringSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindStringSliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Float64Slice.
@@ -317,7 +317,7 @@ func TestBindFloat64SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat64SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Float32Slice.
@@ -344,7 +344,7 @@ func TestBindFloat32SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat32SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Int32Slice.
@@ -371,7 +371,7 @@ func TestBindInt32SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt32SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // Int64Slice.
@@ -398,7 +398,7 @@ func TestBindInt64SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt64SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // BoolSlice.
@@ -425,7 +425,7 @@ func TestBindBoolSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindBoolSliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
 // NestedStruct.
@@ -472,21 +472,17 @@ func TestBindIgnoresUnexportedFields(t *testing.T) {
 
 	s, err := cmd.Flags().GetString("unexported")
 	assert.Equal(t, "", s)
-	assert.NotNil(t, err)
+	assert.Error(t, err)
 }
 
-// Ignore maps
+// Error on invalid type
 
-type BindIgnoresMaps struct {
+type BindInvalidTypeError struct {
 	Map map[string]string `config:",The map"`
 }
 
-func TestBindIgnoresMaps(t *testing.T) {
+func TestBindInvalidTypeError(t *testing.T) {
 	cmd := &cobra.Command{}
-	err := Bind(BindIgnoresMaps{}, cmd)
-	assert.Nil(t, err)
-
-	j, err := cmd.Flags().GetString("map")
-	assert.Equal(t, "", j)
-	assert.NotNil(t, err)
+	err := Bind(BindInvalidTypeError{}, cmd)
+	assert.Error(t, err)
 }
