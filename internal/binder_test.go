@@ -486,3 +486,104 @@ func TestBindInvalidTypeError(t *testing.T) {
 	err := Bind(BindInvalidTypeError{}, cmd)
 	assert.Error(t, err)
 }
+
+// EmbeddedStruct.
+type BindEmbeddedStructSetsDefaults struct {
+	*BindEmbeddedStructInnerSetsDefaults `config:""`
+}
+
+type BindEmbeddedStructInnerSetsDefaults struct {
+	String string `config:"String Test Yo!,The EmbeddedStruct to test"`
+}
+
+func TestBindEmbeddedStructSetsDefault(t *testing.T) {
+	cmd := &cobra.Command{}
+	err := Bind(BindEmbeddedStructSetsDefaults{}, cmd)
+	assert.Nil(t, err)
+
+	i, err := cmd.Flags().GetString("string")
+	assert.Equal(t, "String Test Yo!", i)
+	assert.Nil(t, err)
+}
+
+// Optional separator.
+type BindNestedStructUsesOptions struct {
+	BoolSlice   []bool                           `config:"\"[true,true,false,true]\",The NestedStruct to test"`
+	InnerStruct BindNestedStructInnerUsesOptions `config:""`
+}
+
+type BindNestedStructInnerUsesOptions struct {
+	String string `config:"String Test Yo!,The NestedStruct to test"`
+}
+
+func TestBindNestedStructUsesOptions(t *testing.T) {
+	cmd := &cobra.Command{}
+	err := Bind(BindNestedStructUsesOptions{}, cmd, &Options{Separator: ">>"})
+	assert.Nil(t, err)
+
+	i, err := cmd.Flags().GetString("innerstruct>>string")
+	assert.Equal(t, "String Test Yo!", i)
+	assert.Nil(t, err)
+
+	j, err := cmd.Flags().GetBoolSlice("boolslice")
+	assert.Equal(t, []bool{true, true, false, true}, j)
+	assert.Nil(t, err)
+}
+
+func TestBindNestedStructDefaultsToFullStop(t *testing.T) {
+	cmd := &cobra.Command{}
+	err := Bind(BindNestedStructUsesOptions{}, cmd, &Options{Separator: ""})
+	assert.Nil(t, err)
+
+	i, err := cmd.Flags().GetString("innerstruct.string")
+	assert.Equal(t, "String Test Yo!", i)
+	assert.Nil(t, err)
+
+	j, err := cmd.Flags().GetBoolSlice("boolslice")
+	assert.Equal(t, []bool{true, true, false, true}, j)
+	assert.Nil(t, err)
+}
+
+func TestBindDereferencesPointer(t *testing.T) {
+	cmd := &cobra.Command{}
+	err := Bind(&BindNestedStructUsesOptions{}, cmd)
+	assert.Nil(t, err)
+
+	i, err := cmd.Flags().GetString("innerstruct.string")
+	assert.Equal(t, "String Test Yo!", i)
+	assert.Nil(t, err)
+
+	j, err := cmd.Flags().GetBoolSlice("boolslice")
+	assert.Equal(t, []bool{true, true, false, true}, j)
+	assert.Nil(t, err)
+}
+
+// Tags.
+type BindSkipsUntagged struct {
+	BoolSlice  []bool `config:"\"[true,true,false,true]\",The NestedStruct to test"`
+	TestString string
+}
+
+func TestBindSkipsUntagged(t *testing.T) {
+	cmd := &cobra.Command{}
+	err := Bind(BindSkipsUntagged{}, cmd)
+	assert.Nil(t, err)
+
+	j, err := cmd.Flags().GetBoolSlice("boolslice")
+	assert.Equal(t, []bool{true, true, false, true}, j)
+	assert.Nil(t, err)
+
+	s, err := cmd.Flags().GetString("teststring")
+	assert.Equal(t, "", s)
+	assert.Error(t, err)
+}
+
+type BindErrorsOnInvalidTag struct {
+	TestString string `config:"defualt,asdfg,asg,safg,asfg,afg"`
+}
+
+func TestBindErrorsOnInvalidTag(t *testing.T) {
+	cmd := &cobra.Command{}
+	err := Bind(BindErrorsOnInvalidTag{}, cmd)
+	assert.ErrorIs(t, err, &tagParseError{})
+}

@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/pflag"
 	"github.com/spf13/viper"
 )
 
@@ -33,8 +34,8 @@ func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
 	}
 
 	t := reflect.TypeOf(obj)
-	if reflect.TypeOf(obj).Kind() == reflect.Ptr {
-		t = reflect.TypeOf(obj).Elem()
+	if t.Kind() == reflect.Ptr {
+		t = t.Elem()
 	}
 
 	return b.processFields("", t, cmd)
@@ -73,6 +74,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		return NewTagParseError(tag, k, n, err)
 	}
 
+	f := b.flags(cmd, t)
 	switch k {
 	case reflect.Int:
 		var i int
@@ -82,32 +84,17 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().IntP(n, t.Shorthand, i, t.Description)
-			} else {
-				cmd.PersistentFlags().Int(n, i, t.Description)
-			}
+
+		if t.Shorthand != "" {
+			f.IntP(n, t.Shorthand, i, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().IntP(n, t.Shorthand, i, t.Description)
-			} else {
-				cmd.Flags().Int(n, i, t.Description)
-			}
+			f.Int(n, i, t.Description)
 		}
 	case reflect.String:
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().StringP(n, t.Shorthand, t.Default, t.Description)
-			} else {
-				cmd.PersistentFlags().String(n, t.Default, t.Description)
-			}
+		if t.Shorthand != "" {
+			f.StringP(n, t.Shorthand, t.Default, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().StringP(n, t.Shorthand, t.Default, t.Description)
-			} else {
-				cmd.Flags().String(n, t.Default, t.Description)
-			}
+			f.String(n, t.Default, t.Description)
 		}
 	case reflect.Float64:
 		var i float64
@@ -118,18 +105,10 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Float64P(n, t.Shorthand, i, t.Description)
-			} else {
-				cmd.PersistentFlags().Float64(n, i, t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Float64P(n, t.Shorthand, i, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Float64P(n, t.Shorthand, i, t.Description)
-			} else {
-				cmd.Flags().Float64(n, i, t.Description)
-			}
+			f.Float64(n, i, t.Description)
 		}
 	case reflect.Float32:
 		var i float64
@@ -140,18 +119,10 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Float32P(n, t.Shorthand, float32(i), t.Description)
-			} else {
-				cmd.PersistentFlags().Float32(n, float32(i), t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Float32P(n, t.Shorthand, float32(i), t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Float32P(n, t.Shorthand, float32(i), t.Description)
-			} else {
-				cmd.Flags().Float32(n, float32(i), t.Description)
-			}
+			f.Float32(n, float32(i), t.Description)
 		}
 	case reflect.Int8:
 		var i int64
@@ -162,18 +133,10 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Int8P(n, t.Shorthand, int8(i), t.Description)
-			} else {
-				cmd.PersistentFlags().Int8(n, int8(i), t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Int8P(n, t.Shorthand, int8(i), t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Int8P(n, t.Shorthand, int8(i), t.Description)
-			} else {
-				cmd.Flags().Int8(n, int8(i), t.Description)
-			}
+			f.Int8(n, int8(i), t.Description)
 		}
 	case reflect.Int16:
 		var i int64
@@ -184,18 +147,10 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Int16P(n, t.Shorthand, int16(i), t.Description)
-			} else {
-				cmd.PersistentFlags().Int16(n, int16(i), t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Int16P(n, t.Shorthand, int16(i), t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Int16P(n, t.Shorthand, int16(i), t.Description)
-			} else {
-				cmd.Flags().Int16(n, int16(i), t.Description)
-			}
+			f.Int16(n, int16(i), t.Description)
 		}
 	case reflect.Int32:
 		var i int64
@@ -206,18 +161,10 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Int32P(n, t.Shorthand, int32(i), t.Description)
-			} else {
-				cmd.PersistentFlags().Int32(n, int32(i), t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Int32P(n, t.Shorthand, int32(i), t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Int32P(n, t.Shorthand, int32(i), t.Description)
-			} else {
-				cmd.Flags().Int32(n, int32(i), t.Description)
-			}
+			f.Int32(n, int32(i), t.Description)
 		}
 	case reflect.Int64:
 		var i int64
@@ -228,18 +175,10 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Int64P(n, t.Shorthand, int64(i), t.Description)
-			} else {
-				cmd.PersistentFlags().Int64(n, int64(i), t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Int64P(n, t.Shorthand, int64(i), t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Int64P(n, t.Shorthand, int64(i), t.Description)
-			} else {
-				cmd.Flags().Int64(n, int64(i), t.Description)
-			}
+			f.Int64(n, int64(i), t.Description)
 		}
 	case reflect.Bool:
 		var i bool
@@ -250,18 +189,10 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 			}
 		}
 
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().BoolP(n, t.Shorthand, i, t.Description)
-			} else {
-				cmd.PersistentFlags().Bool(n, i, t.Description)
-			}
+		if t.Shorthand != "" {
+			f.BoolP(n, t.Shorthand, i, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().BoolP(n, t.Shorthand, i, t.Description)
-			} else {
-				cmd.Flags().Bool(n, i, t.Description)
-			}
+			f.Bool(n, i, t.Description)
 		}
 	case reflect.Array, reflect.Slice:
 		err := b.processSlice(n, t, field, cmd)
@@ -273,7 +204,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 	case reflect.Struct:
 		return b.processFields(n, field.Type, cmd)
 	case reflect.Ptr:
-		if field.Type.Elem().Kind() == reflect.Struct && !b.opts.PrefixEmbedded {
+		if field.Type.Elem().Kind() == reflect.Struct && b.opts.PrefixEmbedded {
 			n = prefix
 		}
 		return b.processFields(n, field.Type.Elem(), cmd)
@@ -281,11 +212,7 @@ func (b *Binder) processField(prefix string, field reflect.StructField, cmd *cob
 		return NewInvalidTypeError(field.Type.Kind(), n)
 	}
 
-	if t.Persistent || b.opts.Persistent {
-		err = viper.BindPFlag(n, cmd.PersistentFlags().Lookup(n))
-	} else {
-		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
-	}
+	err = viper.BindPFlag(n, f.Lookup(n))
 	if err != nil {
 		return NewBindError(field.Type.Kind(), n, err)
 	}
@@ -306,6 +233,7 @@ type jsonStruct struct {
 func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *cobra.Command) (err error) {
 	s := &jsonStruct{}
 	k := field.Type.Kind()
+	f := b.flags(cmd, t)
 	switch field.Type.Elem().Kind() {
 	case reflect.Int:
 		if t.Default != "" {
@@ -315,18 +243,11 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().IntSliceP(n, t.Shorthand, s.IntArray, t.Description)
-			} else {
-				cmd.PersistentFlags().IntSlice(n, s.IntArray, t.Description)
-			}
+
+		if t.Shorthand != "" {
+			f.IntSliceP(n, t.Shorthand, s.IntArray, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().IntSliceP(n, t.Shorthand, s.IntArray, t.Description)
-			} else {
-				cmd.Flags().IntSlice(n, s.IntArray, t.Description)
-			}
+			f.IntSlice(n, s.IntArray, t.Description)
 		}
 	case reflect.String:
 		if t.Default != "" {
@@ -336,18 +257,11 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().StringSliceP(n, t.Shorthand, s.StringArray, t.Description)
-			} else {
-				cmd.PersistentFlags().StringSlice(n, s.StringArray, t.Description)
-			}
+
+		if t.Shorthand != "" {
+			f.StringSliceP(n, t.Shorthand, s.StringArray, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().StringSliceP(n, t.Shorthand, s.StringArray, t.Description)
-			} else {
-				cmd.Flags().StringSlice(n, s.StringArray, t.Description)
-			}
+			f.StringSlice(n, s.StringArray, t.Description)
 		}
 	case reflect.Float64:
 		if t.Default != "" {
@@ -357,18 +271,11 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Float64SliceP(n, t.Shorthand, s.Float64Array, t.Description)
-			} else {
-				cmd.PersistentFlags().Float64Slice(n, s.Float64Array, t.Description)
-			}
+
+		if t.Shorthand != "" {
+			f.Float64SliceP(n, t.Shorthand, s.Float64Array, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Float64SliceP(n, t.Shorthand, s.Float64Array, t.Description)
-			} else {
-				cmd.Flags().Float64Slice(n, s.Float64Array, t.Description)
-			}
+			f.Float64Slice(n, s.Float64Array, t.Description)
 		}
 	case reflect.Float32:
 		if t.Default != "" {
@@ -378,18 +285,10 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Float32SliceP(n, t.Shorthand, s.Float32Array, t.Description)
-			} else {
-				cmd.PersistentFlags().Float32Slice(n, s.Float32Array, t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Float32SliceP(n, t.Shorthand, s.Float32Array, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Float32SliceP(n, t.Shorthand, s.Float32Array, t.Description)
-			} else {
-				cmd.Flags().Float32Slice(n, s.Float32Array, t.Description)
-			}
+			f.Float32Slice(n, s.Float32Array, t.Description)
 		}
 	case reflect.Int32:
 		if t.Default != "" {
@@ -399,18 +298,10 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Int32SliceP(n, t.Shorthand, s.Int32Array, t.Description)
-			} else {
-				cmd.PersistentFlags().Int32Slice(n, s.Int32Array, t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Int32SliceP(n, t.Shorthand, s.Int32Array, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Int32SliceP(n, t.Shorthand, s.Int32Array, t.Description)
-			} else {
-				cmd.Flags().Int32Slice(n, s.Int32Array, t.Description)
-			}
+			f.Int32Slice(n, s.Int32Array, t.Description)
 		}
 	case reflect.Int64:
 		if t.Default != "" {
@@ -420,18 +311,10 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().Int64SliceP(n, t.Shorthand, s.Int64Array, t.Description)
-			} else {
-				cmd.PersistentFlags().Int64Slice(n, s.Int64Array, t.Description)
-			}
+		if t.Shorthand != "" {
+			f.Int64SliceP(n, t.Shorthand, s.Int64Array, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().Int64SliceP(n, t.Shorthand, s.Int64Array, t.Description)
-			} else {
-				cmd.Flags().Int64Slice(n, s.Int64Array, t.Description)
-			}
+			f.Int64Slice(n, s.Int64Array, t.Description)
 		}
 	case reflect.Bool:
 		if t.Default != "" {
@@ -441,31 +324,27 @@ func (b *Binder) processSlice(n string, t *Tag, field reflect.StructField, cmd *
 				return NewParseError(t.Default, k, n, err)
 			}
 		}
-		if t.Persistent || b.opts.Persistent {
-			if t.Shorthand != "" {
-				cmd.PersistentFlags().BoolSliceP(n, t.Shorthand, s.BoolArray, t.Description)
-			} else {
-				cmd.PersistentFlags().BoolSlice(n, s.BoolArray, t.Description)
-			}
+		if t.Shorthand != "" {
+			f.BoolSliceP(n, t.Shorthand, s.BoolArray, t.Description)
 		} else {
-			if t.Shorthand != "" {
-				cmd.Flags().BoolSliceP(n, t.Shorthand, s.BoolArray, t.Description)
-			} else {
-				cmd.Flags().BoolSlice(n, s.BoolArray, t.Description)
-			}
+			f.BoolSlice(n, s.BoolArray, t.Description)
 		}
 	default:
 		return NewInvalidTypeError(k, n)
 	}
 
-	if t.Persistent || b.opts.Persistent {
-		err = viper.BindPFlag(n, cmd.PersistentFlags().Lookup(n))
-	} else {
-		err = viper.BindPFlag(n, cmd.Flags().Lookup(n))
-	}
+	err = viper.BindPFlag(n, f.Lookup(n))
 	if err != nil {
 		return NewBindError(k, n, err)
 	}
 
 	return err
+}
+
+func (b *Binder) flags(cmd *cobra.Command, t *Tag) *pflag.FlagSet {
+	f := cmd.Flags()
+	if t.Persistent || b.opts.Persistent {
+		f = cmd.PersistentFlags()
+	}
+	return f
 }

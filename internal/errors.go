@@ -38,7 +38,7 @@ func (e *invalidTypeError) Error() string {
 }
 
 func (e *invalidTypeError) Is(target error) bool {
-	return reflect.TypeOf(target) == reflect.TypeOf(invalidTypeError{})
+	return reflect.TypeOf(target) == reflect.TypeOf(&invalidTypeError{})
 }
 
 type bindError struct {
@@ -63,7 +63,7 @@ func (e *bindError) Error() string {
 }
 
 func (e *bindError) Is(target error) bool {
-	return reflect.TypeOf(target) == reflect.TypeOf(bindError{})
+	return reflect.TypeOf(target) == reflect.TypeOf(&bindError{})
 }
 
 type parseError struct {
@@ -89,7 +89,7 @@ func (e *parseError) Error() string {
 }
 
 func (e *parseError) Is(target error) bool {
-	return reflect.TypeOf(target) == reflect.TypeOf(parseError{})
+	return reflect.TypeOf(target) == reflect.TypeOf(&parseError{})
 }
 
 type tagParseError struct {
@@ -115,5 +115,5 @@ func (e *tagParseError) Error() string {
 }
 
 func (e *tagParseError) Is(target error) bool {
-	return reflect.TypeOf(target) == reflect.TypeOf(tagParseError{})
+	return reflect.TypeOf(target) == reflect.TypeOf(&tagParseError{})
 }
