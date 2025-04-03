@@ -1,10 +1,11 @@
 package internal
 
 import (
+	"errors"
+	"fmt"
 	"testing"
 
 	"github.com/spf13/cobra"
-	"github.com/stretchr/testify/assert"
 )
 
 // Int.
@@ -15,12 +16,12 @@ type BindIntSetsDefault struct {
 func TestBindIntSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindIntSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetInt("inttest")
 
-	assert.Equal(t, 12, i)
-	assert.Nil(t, err)
+	assertEqual(t, 12, i)
+	assertNil(t, err)
 }
 
 type BindIntInvalidDefaultReturnsError struct {
@@ -31,7 +32,7 @@ func TestBindIntInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindIntInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // String.
@@ -42,12 +43,12 @@ type BindStringSetsDefault struct {
 func TestBindStringSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindStringSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetString("stringtest")
 
-	assert.Equal(t, "test string", i)
-	assert.Nil(t, err)
+	assertEqual(t, "test string", i)
+	assertNil(t, err)
 }
 
 // Float64.
@@ -58,12 +59,12 @@ type BindFloat64SetsDefault struct {
 func TestBindFloat64SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat64SetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetFloat64("float64test")
 
-	assert.Equal(t, float64(24), i)
-	assert.Nil(t, err)
+	assertEqual(t, float64(24), i)
+	assertNil(t, err)
 }
 
 type BindFloat64InvalidDefaultReturnsError struct {
@@ -74,7 +75,7 @@ func TestBindFloat64InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat64InvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Float32.
@@ -85,12 +86,12 @@ type BindFloat32SetsDefault struct {
 func TestBindFloat32SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat32SetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetFloat32("float32test")
 
-	assert.Equal(t, float32(36), i)
-	assert.Nil(t, err)
+	assertEqual(t, float32(36), i)
+	assertNil(t, err)
 }
 
 type BindFloat32InvalidDefaultReturnsError struct {
@@ -101,7 +102,7 @@ func TestBindFloat32InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat32InvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Int8.
@@ -112,12 +113,12 @@ type BindInt8SetsDefault struct {
 func TestBindInt8SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt8SetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetInt8("int8test")
 
-	assert.Equal(t, int8(14), i)
-	assert.Nil(t, err)
+	assertEqual(t, int8(14), i)
+	assertNil(t, err)
 }
 
 type BindInt8InvalidDefaultReturnsError struct {
@@ -128,7 +129,7 @@ func TestBindInt8InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt8InvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Int16.
@@ -139,12 +140,12 @@ type BindInt16SetsDefault struct {
 func TestBindInt16SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt16SetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetInt16("int16test")
 
-	assert.Equal(t, int16(16), i)
-	assert.Nil(t, err)
+	assertEqual(t, int16(16), i)
+	assertNil(t, err)
 }
 
 type BindInt16InvalidDefaultReturnsError struct {
@@ -155,7 +156,7 @@ func TestBindInt16InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt16InvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Int32.
@@ -166,12 +167,12 @@ type BindInt32SetsDefault struct {
 func TestBindInt32SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt32SetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetInt32("int32test")
 
-	assert.Equal(t, int32(32), i)
-	assert.Nil(t, err)
+	assertEqual(t, int32(32), i)
+	assertNil(t, err)
 }
 
 type BindInt32InvalidDefaultReturnsError struct {
@@ -182,7 +183,7 @@ func TestBindInt32InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt32InvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Int64.
@@ -193,12 +194,12 @@ type BindInt64SetsDefault struct {
 func TestBindInt64SetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt64SetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetInt64("int64test")
 
-	assert.Equal(t, int64(64), i)
-	assert.Nil(t, err)
+	assertEqual(t, int64(64), i)
+	assertNil(t, err)
 }
 
 type BindInt64InvalidDefaultReturnsError struct {
@@ -209,7 +210,7 @@ func TestBindInt64InvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt64InvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Bool.
@@ -220,12 +221,12 @@ type BindBoolSetsDefault struct {
 func TestBindBoolSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindBoolSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetBool("booltest")
 
-	assert.Equal(t, true, i)
-	assert.Nil(t, err)
+	assertEqual(t, true, i)
+	assertNil(t, err)
 }
 
 type BindBoolInvalidDefaultReturnsError struct {
@@ -236,7 +237,7 @@ func TestBindBoolInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindBoolInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // IntSlice.
@@ -247,12 +248,12 @@ type BindIntSliceSetsDefault struct {
 func TestBindIntSliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindIntSliceSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetIntSlice("intslicetest")
 
-	assert.Equal(t, []int{12, 13, 14, 15}, i)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []int{12, 13, 14, 15}, i)
+	assertNil(t, err)
 }
 
 type BindIntSliceInvalidDefaultReturnsError struct {
@@ -263,7 +264,7 @@ func TestBindIntSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindIntSliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // StringSlice.
@@ -274,12 +275,12 @@ type BindStringSliceSetsDefault struct {
 func TestBindStringSliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindStringSliceSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetStringSlice("stringslicetest")
 
-	assert.Equal(t, []string{"Value1", "Value2"}, i)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []string{"Value1", "Value2"}, i)
+	assertNil(t, err)
 }
 
 type BindStringSliceInvalidDefaultReturnsError struct {
@@ -290,7 +291,7 @@ func TestBindStringSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindStringSliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Float64Slice.
@@ -301,12 +302,12 @@ type BindFloat64SliceSetsDefault struct {
 func TestBindFloat64SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat64SliceSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetFloat64Slice("float64slicetest")
 
-	assert.Equal(t, []float64{12, 13, 14, 15}, i)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []float64{12, 13, 14, 15}, i)
+	assertNil(t, err)
 }
 
 type BindFloat64SliceInvalidDefaultReturnsError struct {
@@ -317,7 +318,7 @@ func TestBindFloat64SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat64SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Float32Slice.
@@ -328,12 +329,12 @@ type BindFloat32SliceSetsDefault struct {
 func TestBindFloat32SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat32SliceSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetFloat32Slice("float32slicetest")
 
-	assert.Equal(t, []float32{12, 13, 14, 15}, i)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []float32{12, 13, 14, 15}, i)
+	assertNil(t, err)
 }
 
 type BindFloat32SliceInvalidDefaultReturnsError struct {
@@ -344,7 +345,7 @@ func TestBindFloat32SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindFloat32SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Int32Slice.
@@ -355,12 +356,12 @@ type BindInt32SliceSetsDefault struct {
 func TestBindInt32SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt32SliceSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetInt32Slice("int32slicetest")
 
-	assert.Equal(t, []int32{12, 13, 14, 15}, i)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []int32{12, 13, 14, 15}, i)
+	assertNil(t, err)
 }
 
 type BindInt32SliceInvalidDefaultReturnsError struct {
@@ -371,7 +372,7 @@ func TestBindInt32SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt32SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // Int64Slice.
@@ -382,12 +383,12 @@ type BindInt64SliceSetsDefault struct {
 func TestBindInt64SliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt64SliceSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetInt64Slice("int64slicetest")
 
-	assert.Equal(t, []int64{12, 13, 14, 15}, i)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []int64{12, 13, 14, 15}, i)
+	assertNil(t, err)
 }
 
 type BindInt64SliceInvalidDefaultReturnsError struct {
@@ -398,7 +399,7 @@ func TestBindInt64SliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInt64SliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // BoolSlice.
@@ -409,12 +410,12 @@ type BindBoolSliceSetsDefault struct {
 func TestBindBoolSliceSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindBoolSliceSetsDefault{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetBoolSlice("boolslicetest")
 
-	assert.Equal(t, []bool{true, true, false, true}, i)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []bool{true, true, false, true}, i)
+	assertNil(t, err)
 }
 
 type BindBoolSliceInvalidDefaultReturnsError struct {
@@ -425,7 +426,7 @@ func TestBindBoolSliceInvalidDefaultReturnsError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindBoolSliceInvalidDefaultReturnsError{}, cmd)
 
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // NestedStruct.
@@ -441,15 +442,15 @@ type BindNestedStructInnerSetsDefaults struct {
 func TestBindNestedStructSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindNestedStructSetsDefaults{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetString("innerstruct.string")
-	assert.Equal(t, "String Test Yo!", i)
-	assert.Nil(t, err)
+	assertEqual(t, "String Test Yo!", i)
+	assertNil(t, err)
 
 	j, err := cmd.Flags().GetBoolSlice("boolslice")
-	assert.Equal(t, []bool{true, true, false, true}, j)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []bool{true, true, false, true}, j)
+	assertNil(t, err)
 }
 
 // Ignore unexpected
@@ -464,15 +465,15 @@ type BindIgnoresUnexportedFields struct {
 func TestBindIgnoresUnexportedFields(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindIgnoresUnexportedFields{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	j, err := cmd.Flags().GetBoolSlice("boolslice")
-	assert.Equal(t, []bool{true, true, false, true}, j)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []bool{true, true, false, true}, j)
+	assertNil(t, err)
 
 	s, err := cmd.Flags().GetString("unexported")
-	assert.Equal(t, "", s)
-	assert.Error(t, err)
+	assertEqual(t, "", s)
+	assertError(t, err)
 }
 
 // Error on invalid type
@@ -484,7 +485,7 @@ type BindInvalidTypeError struct {
 func TestBindInvalidTypeError(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindInvalidTypeError{}, cmd)
-	assert.Error(t, err)
+	assertError(t, err)
 }
 
 // EmbeddedStruct.
@@ -499,11 +500,11 @@ type BindEmbeddedStructInnerSetsDefaults struct {
 func TestBindEmbeddedStructSetsDefault(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindEmbeddedStructSetsDefaults{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetString("string")
-	assert.Equal(t, "String Test Yo!", i)
-	assert.Nil(t, err)
+	assertEqual(t, "String Test Yo!", i)
+	assertNil(t, err)
 }
 
 // Optional separator.
@@ -519,43 +520,43 @@ type BindNestedStructInnerUsesOptions struct {
 func TestBindNestedStructUsesOptions(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindNestedStructUsesOptions{}, cmd, &Options{Separator: ">>"})
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetString("innerstruct>>string")
-	assert.Equal(t, "String Test Yo!", i)
-	assert.Nil(t, err)
+	assertEqual(t, "String Test Yo!", i)
+	assertNil(t, err)
 
 	j, err := cmd.Flags().GetBoolSlice("boolslice")
-	assert.Equal(t, []bool{true, true, false, true}, j)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []bool{true, true, false, true}, j)
+	assertNil(t, err)
 }
 
 func TestBindNestedStructDefaultsToFullStop(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindNestedStructUsesOptions{}, cmd, &Options{Separator: ""})
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetString("innerstruct.string")
-	assert.Equal(t, "String Test Yo!", i)
-	assert.Nil(t, err)
+	assertEqual(t, "String Test Yo!", i)
+	assertNil(t, err)
 
 	j, err := cmd.Flags().GetBoolSlice("boolslice")
-	assert.Equal(t, []bool{true, true, false, true}, j)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []bool{true, true, false, true}, j)
+	assertNil(t, err)
 }
 
 func TestBindDereferencesPointer(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(&BindNestedStructUsesOptions{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	i, err := cmd.Flags().GetString("innerstruct.string")
-	assert.Equal(t, "String Test Yo!", i)
-	assert.Nil(t, err)
+	assertEqual(t, "String Test Yo!", i)
+	assertNil(t, err)
 
 	j, err := cmd.Flags().GetBoolSlice("boolslice")
-	assert.Equal(t, []bool{true, true, false, true}, j)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []bool{true, true, false, true}, j)
+	assertNil(t, err)
 }
 
 // Tags.
@@ -567,15 +568,15 @@ type BindSkipsUntagged struct {
 func TestBindSkipsUntagged(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindSkipsUntagged{}, cmd)
-	assert.Nil(t, err)
+	assertNil(t, err)
 
 	j, err := cmd.Flags().GetBoolSlice("boolslice")
-	assert.Equal(t, []bool{true, true, false, true}, j)
-	assert.Nil(t, err)
+	assertSliceEqual(t, []bool{true, true, false, true}, j)
+	assertNil(t, err)
 
 	s, err := cmd.Flags().GetString("teststring")
-	assert.Equal(t, "", s)
-	assert.Error(t, err)
+	assertEqual(t, "", s)
+	assertError(t, err)
 }
 
 type BindErrorsOnInvalidTag struct {
@@ -585,5 +586,39 @@ type BindErrorsOnInvalidTag struct {
 func TestBindErrorsOnInvalidTag(t *testing.T) {
 	cmd := &cobra.Command{}
 	err := Bind(BindErrorsOnInvalidTag{}, cmd)
-	assert.ErrorIs(t, err, &tagParseError{})
+	assertErrorIs(t, err, &tagParseError{})
+}
+
+func assertNil(t *testing.T, val any) {
+	if val != nil {
+		fmt.Printf("expected nil but got %v\n", val)
+		t.Fail()
+	}
+}
+
+func assertEqual[T comparable](t *testing.T, expected, actual T) {
+	if expected != actual {
+		fmt.Printf("expected '%v' but got '%v'\n", expected, actual)
+		t.Fail()
+	}
+}
+
+func assertSliceEqual[T comparable](t *testing.T, expected, actual []T) {
+	for i, e := range expected {
+		assertEqual(t, e, actual[i])
+	}
+}
+
+func assertError(t *testing.T, err error) {
+	if err == nil {
+		fmt.Printf("expected error but got '%v'\n", err)
+		t.Fail()
+	}
+}
+
+func assertErrorIs(t *testing.T, actual, expected error) {
+	if !errors.Is(expected, actual) {
+		fmt.Printf("expected error to be '%v' but got '%v'\n", expected, actual)
+		t.Fail()
+	}
 }
