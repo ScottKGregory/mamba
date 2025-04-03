@@ -14,7 +14,7 @@ var ParseError = internal.ParseError
 var TagParseError = internal.TagParseError
 
 // MustBind calls the mamba.Bind method and panics if an error is returned.
-func MustBind(obj interface{}, cmd *cobra.Command, options ...*Options) {
+func MustBind(obj any, cmd *cobra.Command, options ...*Options) {
 	if err := Bind(obj, cmd, options...); err != nil {
 		panic(err)
 	}
@@ -25,6 +25,6 @@ func MustBind(obj interface{}, cmd *cobra.Command, options ...*Options) {
 //
 // Nested objects will result in dot-notation flags, e.g. `server.port`. Other
 // separators can be supplied via the Options param if full-stops are not desired.
-func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
+func Bind(obj any, cmd *cobra.Command, options ...*Options) error {
 	return internal.Bind(obj, cmd, options...)
 }

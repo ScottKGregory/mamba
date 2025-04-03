@@ -18,7 +18,7 @@ type Binder struct {
 }
 
 // Bind binds the config tags from the structs and binds flags to the cobra command.
-func Bind(obj interface{}, cmd *cobra.Command, options ...*Options) error {
+func Bind(obj any, cmd *cobra.Command, options ...*Options) error {
 	b := &Binder{
 		opts: &Options{
 			Separator:      ".",
