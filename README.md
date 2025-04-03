@@ -2,7 +2,7 @@
 
 _Because who doesn't need more snakes?_
 
-![Build Status](https://github.com/OWNER/REPOSITORY/actions/workflows/go.yml/badge.svg)
+![Build Status](https://github.com/scottkgregory/mamba/actions/workflows/go.yml/badge.svg)
 [![Go Report Card](https://goreportcard.com/badge/github.com/ScottKGregory/mamba)](https://goreportcard.com/report/github.com/ScottKGregory/mamba)
 ![GitHub go.mod Go version](https://img.shields.io/github/go-mod/go-version/scottkgregory/mamba)
 ![GitHub](https://img.shields.io/github/license/scottkgregory/mamba)
